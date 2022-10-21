@@ -16,8 +16,6 @@ function setCardType(type) {
   ccBgColor02.setAttribute("fill", colors[type][1])
   ccLogo.setAttribute("src", `cc-${type}.svg`)
 }
-setCardType("default")
-
 globalThis.setCardType = setCardType
 
 const securityCode = document.querySelector("#security-code")
@@ -54,8 +52,7 @@ const cardNumberPattern = {
     },
     {
       mask: "0000 0000 0000 0000",
-      regex:
-        /(^5\d[1-5]\d{0,2}) | (^22\d[2-9]\d{0,1}) | (^2\d[3-7]\d{0,2}) \d(0,12)/,
+      regex: /(^5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
       cardtype: "mastercard",
     },
     {
@@ -74,3 +71,50 @@ const cardNumberPattern = {
 }
 
 const cardNumberMasked = IMask(cardNumber, cardNumberPattern)
+
+const addButton = document.querySelector("#add-card")
+addButton.addEventListener("click", () => {
+  alert("Cartão adicionado!")
+})
+
+document.querySelector("form").addEventListener("submit", (event) => {
+  event.preventDefault()
+})
+
+const cardHolder = document.querySelector("#card-holder")
+cardHolder.addEventListener("input", () => {
+  const ccHolder = document.querySelector(".cc-holder .value")
+
+  ccHolder.innerText =
+    cardHolder.value.length === 0 ? "FULANO DA SILVA" : cardHolder.value
+})
+
+securityCodeMasked.on("accept", () => {
+  updateSecurityCode(securityCodeMasked.value)
+})
+
+function updateSecurityCode(code) {
+  const ccSecurity = document.querySelector(".cc-security .value")
+
+  ccSecurity.innerText = code.length === 0 ? "123" : code
+}
+
+cardNumberMasked.on("accept", () => {
+  const cardType = cardNumberMasked.masked.currentMask.cardtype
+  setCardType(cardType)
+  updateCardNumber(cardNumberMasked.value)
+})
+
+function updateCardNumber(number) {
+  const ccNumber = document.querySelector(".cc-number")
+  ccNumber.innerText = number.length === 0 ? "1234 5678 9012 3456" : number
+}
+
+expirationDateMasked.on("accept", () => {
+  updateDate(expirationDateMasked.value)
+})
+
+function updateDate(date) {
+  const ccDate = document.querySelector(".cc-expiration .value")
+  ccDate.innerText = date.length === 0 ? "02/32" : date
+}
